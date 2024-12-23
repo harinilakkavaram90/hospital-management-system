@@ -1,0 +1,203 @@
+class Patient:
+    """Represents a patient in the hospital."""
+    def __init__(self, patient_id, name, age, ailment, doctor_assigned=None):
+        self.patient_id = patient_id
+        self.name = name
+        self.age = age
+        self.ailment = ailment
+        self.doctor_assigned = doctor_assigned
+
+    def assign_doctor(self, doctor_name):
+        self.doctor_assigned = doctor_name
+
+    def __str__(self):
+        return f"ID: {self.patient_id}, Name: {self.name}, Age: {self.age}, Ailment: {self.ailment}, Assigned Doctor: {self.doctor_assigned or 'None'}"
+
+
+class Doctor:
+    """Represents a doctor in the hospital."""
+    def __init__(self, doctor_id, name, specialty):
+        self.doctor_id = doctor_id
+        self.name = name
+        self.specialty = specialty
+        self.patients = []
+
+    def assign_patient(self, patient_id):
+        self.patients.append(patient_id)
+
+    def __str__(self):
+        return f"ID: {self.doctor_id}, Name: {self.name}, Specialty: {self.specialty}, Assigned Patients: {len(self.patients)}"
+
+
+class Appointment:
+    """Represents an appointment between a patient and a doctor."""
+    def __init__(self, appointment_id, patient_id, doctor_id, date, time):
+        self.appointment_id = appointment_id
+        self.patient_id = patient_id
+        self.doctor_id = doctor_id
+        self.date = date
+        self.time = time
+
+    def __str__(self):
+        return f"Appointment ID: {self.appointment_id}, Patient ID: {self.patient_id}, Doctor ID: {self.doctor_id}, Date: {self.date}, Time: {self.time}"
+
+
+class Hospital:
+    """Handles hospital management."""
+    def __init__(self):
+        self.patients = {}
+        self.doctors = {}
+        self.appointments = {}
+
+    # Patient Management
+    def add_patient(self):
+        patient_id = input("Enter Patient ID: ")
+        if patient_id in self.patients:
+            print("Patient ID already exists.")
+            return
+        name = input("Enter Patient Name: ")
+        age = int(input("Enter Patient Age: "))
+        ailment = input("Enter Patient Ailment: ")
+        patient = Patient(patient_id, name, age, ailment)
+        self.patients[patient_id] = patient
+        print("Patient added successfully.")
+
+    def view_patients(self):
+        if not self.patients:
+            print("No patients found.")
+            return
+        print("\n=== Patient Records ===")
+        for patient in self.patients.values():
+            print(patient)
+
+    def delete_patient(self):
+        patient_id = input("Enter Patient ID to delete: ")
+        if patient_id in self.patients:
+            del self.patients[patient_id]
+            print("Patient deleted successfully.")
+        else:
+            print("Patient not found.")
+
+    # Doctor Management
+    def add_doctor(self):
+        doctor_id = input("Enter Doctor ID: ")
+        if doctor_id in self.doctors:
+            print("Doctor ID already exists.")
+            return
+        name = input("Enter Doctor Name: ")
+        specialty = input("Enter Doctor Specialty: ")
+        doctor = Doctor(doctor_id, name, specialty)
+        self.doctors[doctor_id] = doctor
+        print("Doctor added successfully.")
+
+    def view_doctors(self):
+        if not self.doctors:
+            print("No doctors found.")
+            return
+        print("\n=== Doctor Records ===")
+        for doctor in self.doctors.values():
+            print(doctor)
+
+    def delete_doctor(self):
+        doctor_id = input("Enter Doctor ID to delete: ")
+        if doctor_id in self.doctors:
+            del self.doctors[doctor_id]
+            print("Doctor deleted successfully.")
+        else:
+            print("Doctor not found.")
+
+    # Appointment Management
+    def schedule_appointment(self):
+        appointment_id = input("Enter Appointment ID: ")
+        if appointment_id in self.appointments:
+            print("Appointment ID already exists.")
+            return
+        patient_id = input("Enter Patient ID: ")
+        doctor_id = input("Enter Doctor ID: ")
+        if patient_id not in self.patients:
+            print("Patient not found.")
+            return
+        if doctor_id not in self.doctors:
+            print("Doctor not found.")
+            return
+        date = input("Enter Appointment Date (YYYY-MM-DD): ")
+        time = input("Enter Appointment Time (HH:MM): ")
+        appointment = Appointment(appointment_id, patient_id, doctor_id, date, time)
+        self.appointments[appointment_id] = appointment
+        self.doctors[doctor_id].assign_patient(patient_id)
+        self.patients[patient_id].assign_doctor(self.doctors[doctor_id].name)
+        print("Appointment scheduled successfully.")
+
+    def view_appointments(self):
+        if not self.appointments:
+            print("No appointments found.")
+            return
+        print("\n=== Appointment Records ===")
+        for appointment in self.appointments.values():
+            print(appointment)
+
+    def generate_patient_report(self):
+        """Generate report for all patients."""
+        if not self.patients:
+            print("No patients to report.")
+            return
+        print("\n=== Patient Report ===")
+        for patient in self.patients.values():
+            print(patient)
+
+    def generate_doctor_report(self):
+        """Generate report for all doctors."""
+        if not self.doctors:
+            print("No doctors to report.")
+            return
+        print("\n=== Doctor Report ===")
+        for doctor in self.doctors.values():
+            print(doctor)
+
+
+def main():
+    hospital = Hospital()
+    while True:
+        print("\n=== Hospital Management System ===")
+        print("1. Add Patient")
+        print("2. View Patients")
+        print("3. Delete Patient")
+        print("4. Add Doctor")
+        print("5. View Doctors")
+        print("6. Delete Doctor")
+        print("7. Schedule Appointment")
+        print("8. View Appointments")
+        print("9. Generate Patient Report")
+        print("10. Generate Doctor Report")
+        print("11. Exit")
+        choice = input("Enter your choice: ")
+
+        if choice == "1":
+            hospital.add_patient()
+        elif choice == "2":
+            hospital.view_patients()
+        elif choice == "3":
+            hospital.delete_patient()
+        elif choice == "4":
+            hospital.add_doctor()
+        elif choice == "5":
+            hospital.view_doctors()
+        elif choice == "6":
+            hospital.delete_doctor()
+        elif choice == "7":
+            hospital.schedule_appointment()
+        elif choice == "8":
+            hospital.view_appointments()
+        elif choice == "9":
+            hospital.generate_patient_report()
+        elif choice == "10":
+            hospital.generate_doctor_report()
+        elif choice == "11":
+            print("Exiting the system. Goodbye!")
+            break
+        else:
+            print("Invalid choice. Please try again.")
+
+
+if __name__ == "__main__":
+    main()
